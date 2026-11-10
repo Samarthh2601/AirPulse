@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block title %}Current Conditions | AirPulse{% endblock %}
+
+{% block content %}
+
+<div class="current-dashboard">
+
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+        <div>
+            <span class="dashboard-label">AIRPULSE / LIVE MONITORING</span>
+            <h2>{{ city }}</h2>
+            <p>Current weather and air quality conditions</p>
+        </div>
+
+        <div class="updated-time">
+            <span class="live-dot"></span>
+            Live environmental data
+            <small>{{ weather.time }}</small>
+        </div>
+    </div>
+
+
+    <!-- Main Dashboard Grid -->
+    <div class="dashboard-grid">
+
+        <!-- Current Weather -->
+        <section class="weather-main panel">
+
+            <div class="panel-top">
+                <span>CURRENT WEATHER</span>
+                <span class="weather-symbol">☁</span>
+            </div>
+
+            <div class="weather-temperature">
+                {{ weather.temperature_2m }}<span>°C</span>
+            </div>
+
+            <p class="weather-description">
+                Feels like {{ weather.apparent_temperature }}°C
+            </p>
+
+            <div class="weather-location">
+                <span>📍</span> {{ city }}, India
+            </div>
+
+            <div class="weather-bottom">
+                <div>
+                    <small>Humidity</small>
+                    <strong>{{ weather.relative_humidity_2m }}%</strong>
+                </div>
+
+                <div>
+                    <small>Wind speed</small>
+                    <strong>{{ weather.wind_speed_10m }} km/h</strong>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- Weather Metrics -->
+        <section class="weather-metrics">
+
+            <div class="panel metric-card">
+                <span class="metric-icon">💧</span>
+                <small>Humidity</small>
+                <h3>{{ weather.relative_humidity_2m }}<span>%</span></h3>
+            </div>
+
+            <div class="panel metric-card">
+                <span class="metric-icon">🌬</span>
+                <small>Wind Speed</small>
+                <h3>{{ weather.wind_speed_10m }} <span>km/h</span></h3>
+            </div>
+
+            <div class="panel metric-card">
+                <span class="metric-icon">🌡</span>
+                <small>Feels Like</small>
+                <h3>{{ weather.apparent_temperature }}<span>°C</span></h3>
+            </div>
+
+            <div class="panel metric-card">
+                <span class="metric-icon">☁</span>
+                <small>Cloud Cover</small>
+                <h3>{{ weather.cloud_cover }}<span>%</span></h3>
+            </div>
+
+            <div class="panel metric-card">
+                <span class="metric-icon">🌧</span>
+                <small>Precipitation</small>
+                <h3>{{ weather.precipitation }} <span>mm</span></h3>
+            </div>
+
+            <div class="panel metric-card">
+                <span class="metric-icon">◉</span>
+                <small>Pressure</small>
+                <h3>{{ weather.pressure_msl }} <span>hPa</span></h3>
+            </div>
+
+        </section>
+
+
+        <!-- Air Quality Panel -->
+        <section class="panel air-quality-panel">
+
+            <div class="panel-heading">
+                <div>
+                    <span class="dashboard-label">AIR QUALITY</span>
+                    <h4>Particulate Matter</h4>
+                </div>
+
+                <span class="aqi-status">LIVE DATA</span>
+            </div>
+
+            <div class="air-quality-content">
+
+                <!-- AQI Placeholder -->
+                <div class="aqi-circle-container">
+                    <div class="aqi-circle">
+                        <span>--</span>
+                        <small>AQI</small>
+                    </div>
+
+                    <p>Overall AQI unavailable</p>
+                </div>
+
+                <!-- Pollutant Values -->
+                <div class="pollutant-details">
+
+                    <div class="pollutant-item">
+                        <div class="pollutant-name">
+                            <span class="pollutant-dot pm25"></span>
+                            PM2.5
+                        </div>
+
+                        <strong>{{ air.pm2_5 }} <small>µg/m³</small></strong>
+                    </div>
+
+                    <div class="pollutant-bar">
+                        <div style="width: {{ [air.pm2_5, 100] | min }}%"></div>
+                    </div>
+
+                    <div class="pollutant-item">
+                        <div class="pollutant-name">
+                            <span class="pollutant-dot pm10"></span>
+                            PM10
+                        </div>
+
+                        <strong>{{ air.pm10 }} <small>µg/m³</small></strong>
+                    </div>
+
+                    <div class="pollutant-bar">
+                        <div style="width: {{ [air.pm10, 100] | min }}%"></div>
+                    </div>
+
+                    <p class="pollutant-note">
+                        Concentrations are in µg/m³.
+                        Bars use a 100 µg/m³ visual scale.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- Additional Weather Information -->
+        <section class="panel additional-panel">
+
+            <div class="panel-heading">
+                <div>
+                    <span class="dashboard-label">ENVIRONMENT</span>
+                    <h4>Additional Information</h4>
+                </div>
+            </div>
+
+            <div class="additional-row">
+                <span>Wind direction</span>
+                <strong>{{ weather.wind_direction_10m }}°</strong>
+            </div>
+
+            <div class="additional-row">
+                <span>Atmospheric pressure</span>
+                <strong>{{ weather.pressure_msl }} hPa</strong>
+            </div>
+
+            <div class="additional-row">
+                <span>Cloud coverage</span>
+                <strong>{{ weather.cloud_cover }}%</strong>
+            </div>
+
+            <div class="additional-row">
+                <span>Precipitation</span>
+                <strong>{{ weather.precipitation }} mm</strong>
+            </div>
+
+            <div class="additional-row">
+                <span>Observation time</span>
+                <strong>{{ weather.time }}</strong>
+            </div>
+
+        </section>
+
+
+        <!-- Current Pollutant Chart Placeholder -->
+        <section class="panel chart-panel">
+
+            <div class="panel-heading">
+                <div>
+                    <span class="dashboard-label">POLLUTION OVERVIEW</span>
+                    <h4>Current Pollutant Concentrations</h4>
+                </div>
+            </div>
+
+            <div class="chart-placeholder">
+                <div class="chart-bar-row">
+                    <span>PM2.5</span>
+                    <div class="chart-track">
+                        <div class="chart-fill pm25-fill"
+                             style="width: {{ [air.pm2_5, 100] | min }}%">
+                        </div>
+                    </div>
+                    <strong>{{ air.pm2_5 }}</strong>
+                </div>
+
+                <div class="chart-bar-row">
+                    <span>PM10</span>
+                    <div class="chart-track">
+                        <div class="chart-fill pm10-fill"
+                             style="width: {{ [air.pm10, 100] | min }}%">
+                        </div>
+                    </div>
+                    <strong>{{ air.pm10 }}</strong>
+                </div>
+            </div>
+
+            <p class="chart-caption">
+                Current particulate matter readings.
+                Scale: 0-100 µg/m³.
+            </p>
+
+        </section>
+
+    </div>
+
+</div>
+
+{% endblock content %}
+

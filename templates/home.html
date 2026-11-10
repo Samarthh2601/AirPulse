@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}AirPulse | Understand Your Air{% endblock %}
+
+{% block content %}
+
+<main>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container">
+            <div class="row align-items-center">
+
+                <!-- Left Content -->
+                <div class="col-lg-5 hero-content">
+
+                    <span class="hero-tag">
+                        <span class="status-dot"></span>
+                        YOUR PERSONAL AIR QUALITY ASSISTANT
+                    </span>
+
+                    <h1>
+                        Breathe better.
+                        <span>Live smarter.</span>
+                    </h1>
+
+                    <p class="hero-description">
+                        Understand the air around you with real-time
+                        air quality monitoring, weather updates and
+                        intelligent forecasts.
+                    </p>
+
+                    <div class="hero-buttons">
+                        <a href="/current" class="btn btn-primary-custom">
+                            Explore Air Quality
+                            <span>→</span>
+                        </a>
+
+                        <a href="/forecast" class="btn btn-outline-custom">
+                            View Forecast
+                        </a>
+                    </div>
+
+                    <div class="hero-note">
+                        <span>◉</span>
+                        Powered by Open-Meteo environmental data
+                    </div>
+
+                </div>
+
+                <!-- Right Visual -->
+                <div class="col-lg-7 hero-visual">
+
+                    <div class="globe-container">
+
+                        <div class="globe">
+
+                            <div class="globe-grid"></div>
+
+                            <!-- Monitoring locations -->
+                            <span class="map-point point-1"></span>
+                            <span class="map-point point-2"></span>
+                            <span class="map-point point-3"></span>
+                            <span class="map-point point-4"></span>
+                            <span class="map-point point-5"></span>
+                            <span class="map-point point-6"></span>
+
+                        </div>
+
+                        <div class="floating-circle circle-one"></div>
+                        <div class="floating-circle circle-two"></div>
+
+                        <!-- AQI Information Card -->
+                        <div class="aqi-preview-card">
+
+                            <div class="aqi-card-header">
+                                <div>
+                                    <small>LIVE AIR QUALITY</small>
+                                    <h5>Ludhiana, India</h5>
+                                </div>
+
+                                <span class="live-indicator">
+                                    LIVE
+                                </span>
+                            </div>
+
+                            <div class="aqi-main">
+                                <div>
+                                    <small>Current AQI</small>
+                                    <h2>--</h2>
+                                    <span>Awaiting live data</span>
+                                </div>
+
+                                <div class="aqi-icon">
+                                    ☀
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <p class="pollutant-heading">
+                                AIR QUALITY INDICATORS
+                            </p>
+
+                            <div class="pollutant-row">
+                                <span>PM2.5</span>
+                                <strong>-- µg/m³</strong>
+                            </div>
+
+                            <div class="pollutant-row">
+                                <span>PM10</span>
+                                <strong>-- µg/m³</strong>
+                            </div>
+
+                            <div class="pollutant-row">
+                                <span>Ozone</span>
+                                <strong>-- µg/m³</strong>
+                            </div>
+
+                            <div class="pollutant-row">
+                                <span>Temperature</span>
+                                <strong>-- °C</strong>
+                            </div>
+
+                            <a href="/current" class="aqi-card-link">
+                                View detailed report →
+                            </a>
+
+                        </div>
+
+                        <div class="floating-label label-top">
+                            <span>●</span> Air monitoring
+                        </div>
+
+
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+
+            <div class="text-center section-heading">
+                <span>EXPLORE AIRPULSE</span>
+                <h2>Know your air. Plan your day.</h2>
+                <p>
+                    Everything you need to understand current and
+                    upcoming environmental conditions.
+                </p>
+            </div>
+
+            <div class="row g-4">
+
+                <div class="col-md-4">
+                    <a href="/current" class="feature-card">
+                        <div class="feature-icon">◉</div>
+                        <h4>Current Conditions</h4>
+                        <p>
+                            Explore real-time AQI, pollutants and
+                            weather conditions in your city.
+                        </p>
+                        <span>Explore current data →</span>
+                    </a>
+                </div>
+
+                <div class="col-md-4">
+                    <a href="/forecast" class="feature-card">
+                        <div class="feature-icon">↗</div>
+                        <h4>Future Forecasts</h4>
+                        <p>
+                            See upcoming air quality and weather
+                            conditions through hourly forecasts.
+                        </p>
+                        <span>View forecasts →</span>
+                    </a>
+                </div>
+
+                <div class="col-md-4">
+                    <a href="/compare" class="feature-card">
+                        <div class="feature-icon">▥</div>
+                        <h4>Compare & Analyse</h4>
+                        <p>
+                            Compare environmental parameters and
+                            understand how conditions may change.
+                        </p>
+                        <span>Analyse data →</span>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+</main>
+
+{% endblock %}
