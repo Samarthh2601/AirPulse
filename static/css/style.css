@@ -835,6 +835,7 @@ a {
 .aqi-circle-container {
     text-align: center;
     flex: 0 0 42%;
+    color: var(--aqi-color);
 }
 
 .aqi-circle {
@@ -848,6 +849,18 @@ a {
     justify-content: center;
     flex-direction: column;
     margin: auto;
+
+
+    border: 13px solid var(--aqi-color);
+
+    box-shadow:
+        0 0 0 9px color-mix(
+            in srgb,
+            var(--aqi-color) 15%,
+            transparent
+        );
+
+
 }
 
 .aqi-circle span {

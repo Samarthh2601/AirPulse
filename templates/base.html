@@ -69,8 +69,36 @@
                 </ul>
 
             </div>
+            <form action="/set-city" method="POST"
+      class="d-flex align-items-center gap-2">
+
+    <input type="hidden"
+           name="next"
+           value="{{ request.url.path }}">
+
+    <select name="city" class="form-select"
+            style="width: 160px;">
+
+        {% for city in cities %}
+
+        <option value="{{ city }}"
+            {% if city == selected_city %}selected{% endif %}>
+            {{ city }}
+        </option>
+
+        {% endfor %}
+
+    </select>
+
+    <button type="submit" class="btn btn-success">
+        Apply
+    </button>
+
+</form>
         </div>
     </nav>
+
+    
 
     <!-- Page Content -->
     {% block content %}

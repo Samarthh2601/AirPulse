@@ -141,3 +141,23 @@ def get_aqi_category(aqi):
 
     else:
         return "Hazardous"
+
+def get_aqi_color(aqi):
+
+    if aqi <= 50:
+        return "#00E400"
+
+    elif aqi <= 100:
+        return "#FFFF00"
+
+    elif aqi <= 150:
+        return "#FF7E00"
+
+    elif aqi <= 200:
+        return "#FF0000"
+
+    elif aqi <= 300:
+        return "#8F3F97"
+
+    else:
+        return "#7E0023"
