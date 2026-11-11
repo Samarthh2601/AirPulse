@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
-from services import get_current_json, get_preds_df, get_aqi_category, create_forecast_graph, create_aqi_forecast_graph, get_coords, get_aqi_color, CITIES
+from services import get_current_json, get_preds_df, get_aqi_category, create_forecast_graph, create_aqi_forecast_graph,  generate_insights, get_forecast_summary, get_coords, get_aqi_color, CITIES
 import plotly.io as pio
 
 
@@ -119,26 +119,29 @@ async def compare_forecast(request: Request):
 
     lat, lng = get_coords(city)
 
+
     current_air, current_weather = get_current_json(lat, lng)
+
 
     forecast_df = get_preds_df(lat, lng)
 
-    # Next 24 hours
-    next_24 = forecast_df.head(24)
+    forecast_summary, next_24 = get_forecast_summary(
+        forecast_df,
+        current_weather
+    )
 
-    forecast_aqi = round(next_24["us_aqi"].mean())
-
-    aqi_min = next_24["us_aqi"].min()
-    aqi_max = next_24["us_aqi"].max()
-
-    # Create AQI graph
-    fig = create_aqi_forecast_graph(forecast_df)
+    fig = create_aqi_forecast_graph(next_24)
 
     graph_html = pio.to_html(
         fig,
         full_html=False,
         include_plotlyjs="cdn"
     )
+
+    insights = generate_insights(
+    current_air,
+    current_weather,
+    forecast_df)
 
     return templates.TemplateResponse(
         request=request,
@@ -149,10 +152,9 @@ async def compare_forecast(request: Request):
                 "city": city,
                 "current_air": current_air,
                 "current_weather": current_weather,
-                "forecast_aqi": forecast_aqi,
-                "aqi_min": aqi_min,
-                "aqi_max": aqi_max,
-                "graph_html": graph_html
+                "forecast": forecast_summary,
+                "graph_html": graph_html,
+                "insights": insights,
             }
         )
     )

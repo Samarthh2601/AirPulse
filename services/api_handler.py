@@ -67,7 +67,7 @@ def get_current_aqi(latitude, longitude):
     params = {
         "latitude": latitude,
         "longitude": longitude,
-        "current": "pm2_5,pm10,us_aqi",
+        "current": "pm2_5,pm10,us_aqi,carbon_monoxide,nitrogen_dioxide,ozone,sulphur_dioxide",
         "timezone": "Asia/Kolkata"
     }
 
@@ -162,8 +162,184 @@ def get_aqi_color(aqi):
         return "#7E0023"
 
 
-s = get_preds_df(28.6600, 77.2300)
-print(s.columns)
 
-x = get_current_json(28.6600, 77.2300)
-print(x)
+import pandas as pd
+
+
+def get_forecast_summary(df, current_weather):
+
+    df = df.copy()
+    df["time"] = pd.to_datetime(df["time"])
+
+    current_time = pd.to_datetime(current_weather["time"])
+
+    next_24 = df[df["time"] >= current_time].head(24)
+
+    if next_24.empty:
+        next_24 = df.tail(24)
+
+    next_24 = next_24.dropna(subset=["us_aqi"])
+
+    average_columns = [
+        "us_aqi",
+        "pm2_5",
+        "pm10",
+        "carbon_monoxide",
+        "nitrogen_dioxide",
+        "sulphur_dioxide",
+        "ozone",
+        "ammonia",
+        "temperature_2m",
+        "relative_humidity_2m",
+        "dew_point_2m",
+        "wind_speed_10m",
+        "pressure_msl",
+        "cloud_cover",
+        "boundary_layer_height",
+        "shortwave_radiation"
+    ]
+
+    summary = {}
+
+    for col in average_columns:
+        if col in next_24.columns:
+            summary[col] = round(next_24[col].mean(), 1)
+
+    summary["aqi_min"] = next_24["us_aqi"].min()
+    summary["aqi_max"] = next_24["us_aqi"].max()
+
+    summary["max_temperature"] = next_24["temperature_2m"].max()
+    summary["min_temperature"] = next_24["temperature_2m"].min()
+
+    # Total rainfall over the selected period
+    summary["total_precipitation"] = round(
+        next_24["precipitation"].sum(), 1
+    )
+
+    # Maximum wind speed
+    summary["max_wind_speed"] = next_24["wind_speed_10m"].max()
+
+    # Times of minimum and maximum AQI
+    summary["best_aqi_time"] = next_24.loc[
+        next_24["us_aqi"].idxmin(), "time"
+    ]
+
+    summary["worst_aqi_time"] = next_24.loc[
+        next_24["us_aqi"].idxmax(), "time"
+    ]
+
+    return summary, next_24
+
+
+
+
+def generate_insights(current_air, current_weather, forecast_df):
+
+    insights = []
+
+    # Current AQI
+    current_aqi = current_air["us_aqi"]
+
+    # Next 24 forecast hours
+    forecast = forecast_df.head(24).copy()
+
+    forecast = forecast.dropna(subset=["us_aqi"])
+
+    if forecast.empty:
+        return insights
+
+    # AQI comparison
+    avg_aqi = forecast["us_aqi"].mean()
+    difference = avg_aqi - current_aqi
+
+    if difference < -5:
+        insights.append({
+            "title": "Air quality is expected to improve",
+            "description": (
+                f"Average AQI may decrease by "
+                f"{abs(difference):.0f} points "
+                "over the next 24 hours."
+            ),
+            "type": "success"
+        })
+
+    elif difference > 5:
+        insights.append({
+            "title": "Air quality may deteriorate",
+            "description": (
+                f"Average AQI may increase by "
+                f"{difference:.0f} points "
+                "over the next 24 hours."
+            ),
+            "type": "warning"
+        })
+
+    else:
+        insights.append({
+            "title": "Air quality is expected to remain stable",
+            "description": "The forecast average AQI is close to the current reading.",
+            "type": "info"
+        })
+
+    # AQI peak
+    max_aqi_row = forecast.loc[forecast["us_aqi"].idxmax()]
+    min_aqi_row = forecast.loc[forecast["us_aqi"].idxmin()]
+
+    insights.append({
+        "title": "Expected AQI peak",
+        "description": (
+            f"AQI may reach {max_aqi_row['us_aqi']:.0f} "
+            f"around {max_aqi_row['time']}."
+        ),
+        "type": "warning"
+    })
+
+    insights.append({
+        "title": "Best expected air quality",
+        "description": (
+            f"The lowest forecast AQI is "
+            f"{min_aqi_row['us_aqi']:.0f}, "
+            f"around {min_aqi_row['time']}."
+        ),
+        "type": "success"
+    })
+
+    # Temperature
+    min_temp = forecast["temperature_2m"].min()
+    max_temp = forecast["temperature_2m"].max()
+
+    insights.append({
+        "title": "Temperature outlook",
+        "description": (
+            f"Temperature is expected to range "
+            f"between {min_temp:.1f}°C and {max_temp:.1f}°C."
+        ),
+        "type": "info"
+    })
+
+    # Precipitation
+    total_rain = forecast["precipitation"].sum()
+
+    if total_rain > 0:
+        insights.append({
+            "title": "Precipitation expected",
+            "description": (
+                f"Approximately {total_rain:.1f} mm "
+                "of precipitation is forecast."
+            ),
+            "type": "info"
+        })
+
+    # Wind
+    max_wind = forecast["wind_speed_10m"].max()
+
+    insights.append({
+        "title": "Wind conditions",
+        "description": (
+            f"Wind speeds may reach {max_wind:.1f} km/h "
+            "during the forecast period."
+        ),
+        "type": "info"
+    })
+
+    return insights

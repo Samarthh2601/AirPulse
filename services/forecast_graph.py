@@ -148,6 +148,7 @@ def create_forecast_graph(df):
     return fig
 
 
+
 import plotly.graph_objects as go
 
 
@@ -161,22 +162,43 @@ def create_aqi_forecast_graph(df):
             y=df["us_aqi"],
             mode="lines",
             name="US AQI",
-            line=dict(
-                color="#20c997",
-                width=3
-            ),
+            line=dict(color="#e76f51", width=3),
             fill="tozeroy",
-            fillcolor="rgba(32,201,151,0.10)"
+            fillcolor="rgba(231,111,81,0.12)",
+            hovertemplate="%{y:.0f} AQI<extra></extra>"
+        )
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=df["time"],
+            y=df["pm2_5"],
+            mode="lines",
+            name="PM2.5",
+            line=dict(color="#219ebc", width=2),
+            yaxis="y2",
+            hovertemplate="%{y:.1f} µg/m³<extra></extra>"
         )
     )
 
     fig.update_layout(
-        title="72-Hour AQI Forecast",
         template="plotly_white",
         height=450,
         hovermode="x unified",
-        yaxis_title="US AQI",
-        xaxis_title="Time"
+        legend=dict(
+            orientation="h",
+            y=1.12
+        ),
+        yaxis=dict(
+            title="US AQI"
+        ),
+        yaxis2=dict(
+            title="PM2.5 (µg/m³)",
+            overlaying="y",
+            side="right",
+            showgrid=False
+        ),
+        margin=dict(l=55, r=55, t=75, b=50)
     )
 
     return fig

@@ -1,78 +1,357 @@
+
 {% extends "base.html" %}
 
 {% block content %}
 
 <div class="container py-5">
 
-    <div class="mb-4">
-        <h2 class="fw-bold">Current vs Forecast</h2>
-        <p class="text-muted">
-            Air quality and weather comparison for {{ city }}
-        </p>
+    <!-- PAGE HEADER -->
+    <div class="d-flex justify-content-between align-items-center flex-wrap mb-5">
+        <div>
+            <h2 class="fw-bold mb-2">Current vs Forecast</h2>
+            <p class="text-muted mb-0">
+                Understand how air quality and weather are expected
+                to change in {{ city }}.
+            </p>
+        </div>
+
+        <div class="mt-3 mt-md-0">
+            <span class="badge bg-success-subtle text-success fs-6 px-3 py-2">
+                {{ city }}
+            </span>
+        </div>
     </div>
 
-    <!-- AQI comparison -->
+
+    <!-- AQI OVERVIEW -->
+    <h4 class="fw-bold mb-3">Air Quality Overview</h4>
+
     <div class="row g-4 mb-5">
 
+        <!-- CURRENT AQI -->
         <div class="col-md-6">
-            <div class="card border-0 shadow-sm p-4">
-                <h5>Current AQI</h5>
+            <div class="card border-0 shadow-sm p-4 h-100">
 
-                <h1 class="display-3 fw-bold">
+                <p class="text-muted mb-2">Current AQI</p>
+
+                <h1 class="display-3 fw-bold mb-2">
                     {{ current_air.us_aqi }}
                 </h1>
 
+                <p class="text-muted mb-0">
+                    Latest available air quality reading
+                </p>
+
             </div>
         </div>
 
-        <div class="col-md-6">
-            <div class="card border-0 shadow-sm p-4">
-                <h5>Forecast AQI</h5>
 
-                <h1 class="display-3 fw-bold">
-                    {{ forecast_aqi }}
+        <!-- FORECAST AQI -->
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm p-4 h-100">
+
+                <p class="text-muted mb-2">
+                    Next 24 Hours · Average AQI
+                </p>
+
+                <h1 class="display-3 fw-bold mb-2">
+                    {{ forecast.us_aqi }}
                 </h1>
 
-                <span>Next 24 hours</span>
+                <p class="text-muted mb-0">
+                    Expected range:
+                    {{ forecast.aqi_min }} - {{ forecast.aqi_max }}
+                </p>
+
             </div>
         </div>
 
     </div>
 
-    <!-- Graph -->
+
+    <!-- AQI FORECAST GRAPH -->
     <div class="card border-0 shadow-sm p-4 mb-5">
-        <h5 class="fw-bold mb-3">AQI Forecast Trend</h5>
+
+        <div class="mb-3">
+            <h4 class="fw-bold mb-1">AQI Forecast Trend</h4>
+
+            <p class="text-muted small mb-0">
+                Hourly US AQI forecast for the upcoming 24 hours.
+            </p>
+        </div>
 
         {{ graph_html | safe }}
+
     </div>
 
-    <!-- Weather comparison -->
-    <div class="card border-0 shadow-sm p-4">
-        <h5 class="fw-bold mb-3">Current Weather Conditions</h5>
 
-        <div class="row g-3">
+    <!-- POLLUTANT COMPARISON -->
+    <h4 class="fw-bold mb-3">Pollutant Comparison</h4>
 
-            <div class="col-md-3">
-                <p class="text-muted">Temperature</p>
-                <h4>{{ current_weather.temperature_2m }}°C</h4>
+    <div class="card border-0 shadow-sm p-4 mb-5">
+
+        <div class="table-responsive">
+
+            <table class="table align-middle mb-0">
+
+                <thead>
+                    <tr>
+                        <th>Pollutant</th>
+                        <th>Current</th>
+                        <th>Next 24h Average</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>PM2.5</td>
+                        <td>{{ current_air.pm2_5 }} µg/m³</td>
+                        <td>{{ forecast.pm2_5 }} µg/m³</td>
+                    </tr>
+
+                    <tr>
+                        <td>PM10</td>
+                        <td>{{ current_air.pm10 }} µg/m³</td>
+                        <td>{{ forecast.pm10 }} µg/m³</td>
+                    </tr>
+
+                    <tr>
+                        <td>Carbon Monoxide</td>
+                        <td>{{ current_air.carbon_monoxide }} µg/m³</td>
+                        <td>{{ forecast.carbon_monoxide }} µg/m³</td>
+                    </tr>
+
+                    <tr>
+                        <td>Nitrogen Dioxide</td>
+                        <td>{{ current_air.nitrogen_dioxide }} µg/m³</td>
+                        <td>{{ forecast.nitrogen_dioxide }} µg/m³</td>
+                    </tr>
+
+                    <tr>
+                        <td>Sulphur Dioxide</td>
+                        <td>{{ current_air.sulphur_dioxide }} µg/m³</td>
+                        <td>{{ forecast.sulphur_dioxide }} µg/m³</td>
+                    </tr>
+
+                    <tr>
+                        <td>Ozone</td>
+                        <td>{{ current_air.ozone }} µg/m³</td>
+                        <td>{{ forecast.ozone }} µg/m³</td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- WEATHER COMPARISON -->
+    <h4 class="fw-bold mb-3">Weather Comparison</h4>
+
+    <div class="card border-0 shadow-sm p-4 mb-5">
+
+        <div class="table-responsive">
+
+            <table class="table align-middle mb-0">
+
+                <thead>
+                    <tr>
+                        <th>Parameter</th>
+                        <th>Current</th>
+                        <th>Next 24h Average</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    <tr>
+                        <td>Temperature</td>
+                        <td>{{ current_weather.temperature_2m }} °C</td>
+                        <td>{{ forecast.temperature_2m }} °C</td>
+                    </tr>
+
+                    <tr>
+                        <td>Feels Like</td>
+                        <td>{{ current_weather.apparent_temperature }} °C</td>
+                        <td>—</td>
+                    </tr>
+
+                    <tr>
+                        <td>Humidity</td>
+                        <td>{{ current_weather.relative_humidity_2m }}%</td>
+                        <td>{{ forecast.relative_humidity_2m }}%</td>
+                    </tr>
+
+                    <tr>
+                        <td>Dew Point</td>
+                        <td>—</td>
+                        <td>{{ forecast.dew_point_2m }} °C</td>
+                    </tr>
+
+                    <tr>
+                        <td>Wind Speed</td>
+                        <td>{{ current_weather.wind_speed_10m }} km/h</td>
+                        <td>{{ forecast.wind_speed_10m }} km/h</td>
+                    </tr>
+
+                    <tr>
+                        <td>Pressure</td>
+                        <td>{{ current_weather.pressure_msl }} hPa</td>
+                        <td>{{ forecast.pressure_msl }} hPa</td>
+                    </tr>
+
+                    <tr>
+                        <td>Cloud Cover</td>
+                        <td>{{ current_weather.cloud_cover }}%</td>
+                        <td>{{ forecast.cloud_cover }}%</td>
+                    </tr>
+
+                    <tr>
+                        <td>Precipitation</td>
+                        <td>{{ current_weather.precipitation }} mm</td>
+                        <td>{{ forecast.total_precipitation }} mm total</td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- ATMOSPHERIC CONDITIONS -->
+    <h4 class="fw-bold mb-3">Atmospheric Conditions</h4>
+
+    <div class="row g-3 mb-5">
+
+        <div class="col-md-4 col-lg-3">
+            <div class="card border-0 shadow-sm p-3 h-100">
+                <p class="text-muted small mb-1">Boundary Layer Height</p>
+                <h4 class="fw-bold mb-0">
+                    {{ forecast.boundary_layer_height }} m
+                </h4>
             </div>
+        </div>
 
-            <div class="col-md-3">
-                <p class="text-muted">Humidity</p>
-                <h4>{{ current_weather.relative_humidity_2m }}%</h4>
+        <div class="col-md-4 col-lg-3">
+            <div class="card border-0 shadow-sm p-3 h-100">
+                <p class="text-muted small mb-1">Shortwave Radiation</p>
+                <h4 class="fw-bold mb-0">
+                    {{ forecast.shortwave_radiation }} W/m²
+                </h4>
             </div>
+        </div>
 
-            <div class="col-md-3">
-                <p class="text-muted">Wind Speed</p>
-                <h4>{{ current_weather.wind_speed_10m }} km/h</h4>
+        <div class="col-md-4 col-lg-3">
+            <div class="card border-0 shadow-sm p-3 h-100">
+                <p class="text-muted small mb-1">Maximum Temperature</p>
+                <h4 class="fw-bold mb-0">
+                    {{ forecast.max_temperature }} °C
+                </h4>
             </div>
+        </div>
 
-            <div class="col-md-3">
-                <p class="text-muted">Pressure</p>
-                <h4>{{ current_weather.pressure_msl }} hPa</h4>
+        <div class="col-md-4 col-lg-3">
+            <div class="card border-0 shadow-sm p-3 h-100">
+                <p class="text-muted small mb-1">Maximum Wind Speed</p>
+                <h4 class="fw-bold mb-0">
+                    {{ forecast.max_wind_speed }} km/h
+                </h4>
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- AIRPULSE INSIGHTS -->
+    <div class="mb-4">
+
+        <h4 class="fw-bold mb-2">AirPulse Insights</h4>
+
+        <p class="text-muted">
+            Key observations based on current conditions
+            and upcoming forecasts.
+        </p>
+
+    </div>
+
+    <div class="row g-3 mb-5">
+
+        {% for insight in insights %}
+
+        <div class="col-md-6">
+
+            <div class="card border-0 shadow-sm p-4 h-100">
+
+                <div class="d-flex align-items-start gap-3">
+
+                    <div class="fs-4">
+
+                        {% if insight.type == "success" %}
+                            <i class="bi bi-check-circle-fill text-success"></i>
+
+                        {% elif insight.type == "warning" %}
+                            <i class="bi bi-exclamation-triangle-fill text-warning"></i>
+
+                        {% else %}
+                            <i class="bi bi-info-circle-fill text-primary"></i>
+
+                        {% endif %}
+
+                    </div>
+
+                    <div>
+
+                        <h6 class="fw-bold mb-2">
+                            {{ insight.title }}
+                        </h6>
+
+                        <p class="text-muted mb-0">
+                            {{ insight.description }}
+                        </p>
+
+                    </div>
+
+                </div>
+
             </div>
 
         </div>
+
+        {% else %}
+
+        <div class="col-12">
+            <div class="card border-0 shadow-sm p-4">
+                <p class="text-muted mb-0">
+                    No additional insights are available at the moment.
+                </p>
+            </div>
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+
+    <!-- FOOTNOTE -->
+    <div class="text-muted small border-top pt-3">
+
+        <p class="mb-1">
+            Air quality index is displayed using the US EPA AQI scale
+            provided by Open-Meteo.
+        </p>
+
+        <p class="mb-0">
+            Forecast values are model-based estimates and may differ
+            from actual atmospheric conditions.
+        </p>
+
     </div>
 
 </div>
