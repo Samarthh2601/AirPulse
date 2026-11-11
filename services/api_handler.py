@@ -1,5 +1,6 @@
 import requests
 import pandas as pd
+from datetime import datetime
 
 AIR_QUALITY_URL = "https://air-quality-api.open-meteo.com/v1/air-quality"
 WEATHER_URL = "https://api.open-meteo.com/v1/forecast"
@@ -163,9 +164,6 @@ def get_aqi_color(aqi):
 
 
 
-import pandas as pd
-
-
 def get_forecast_summary(df, current_weather):
 
     df = df.copy()
@@ -233,23 +231,28 @@ def get_forecast_summary(df, current_weather):
 
 
 
+
+from datetime import datetime
+
+
 def generate_insights(current_air, current_weather, forecast_df):
 
     insights = []
 
-    # Current AQI
-    current_aqi = current_air["us_aqi"]
+    # Select next 24 forecast hours
+    forecast = forecast_df.copy()
+    forecast["time"] = datetime_format = __import__("pandas").to_datetime(
+        forecast["time"]
+    )
 
-    # Next 24 forecast hours
-    forecast = forecast_df.head(24).copy()
-
+    forecast = forecast.head(24).copy()
     forecast = forecast.dropna(subset=["us_aqi"])
 
     if forecast.empty:
-        return insights
-
-    # AQI comparison
+        return insight
+    current_aqi = current_air["us_aqi"]
     avg_aqi = forecast["us_aqi"].mean()
+
     difference = avg_aqi - current_aqi
 
     if difference < -5:
@@ -277,19 +280,29 @@ def generate_insights(current_air, current_weather, forecast_df):
     else:
         insights.append({
             "title": "Air quality is expected to remain stable",
-            "description": "The forecast average AQI is close to the current reading.",
+            "description": (
+                "The forecast average AQI is close "
+                "to the current reading."
+            ),
             "type": "info"
         })
 
-    # AQI peak
     max_aqi_row = forecast.loc[forecast["us_aqi"].idxmax()]
     min_aqi_row = forecast.loc[forecast["us_aqi"].idxmin()]
+
+    worst_time = datetime.fromisoformat(
+        str(max_aqi_row["time"])
+    ).strftime("%d %b %Y, %I:%M %p")
+
+    best_time = datetime.fromisoformat(
+        str(min_aqi_row["time"])
+    ).strftime("%d %b %Y, %I:%M %p")
 
     insights.append({
         "title": "Expected AQI peak",
         "description": (
             f"AQI may reach {max_aqi_row['us_aqi']:.0f} "
-            f"around {max_aqi_row['time']}."
+            f"around {worst_time}."
         ),
         "type": "warning"
     })
@@ -299,12 +312,12 @@ def generate_insights(current_air, current_weather, forecast_df):
         "description": (
             f"The lowest forecast AQI is "
             f"{min_aqi_row['us_aqi']:.0f}, "
-            f"around {min_aqi_row['time']}."
+            f"around {best_time}."
         ),
         "type": "success"
     })
 
-    # Temperature
+
     min_temp = forecast["temperature_2m"].min()
     max_temp = forecast["temperature_2m"].max()
 
@@ -312,12 +325,12 @@ def generate_insights(current_air, current_weather, forecast_df):
         "title": "Temperature outlook",
         "description": (
             f"Temperature is expected to range "
-            f"between {min_temp:.1f}°C and {max_temp:.1f}°C."
+            f"between {min_temp:.1f}°C and "
+            f"{max_temp:.1f}°C."
         ),
         "type": "info"
     })
 
-    # Precipitation
     total_rain = forecast["precipitation"].sum()
 
     if total_rain > 0:
@@ -325,12 +338,16 @@ def generate_insights(current_air, current_weather, forecast_df):
             "title": "Precipitation expected",
             "description": (
                 f"Approximately {total_rain:.1f} mm "
-                "of precipitation is forecast."
+                "of precipitation is forecast "
+                "over the next 24 hours."
             ),
             "type": "info"
         })
 
-    # Wind
+    # -------------------------
+    # WIND CONDITIONS
+    # -------------------------
+
     max_wind = forecast["wind_speed_10m"].max()
 
     insights.append({

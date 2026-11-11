@@ -161,7 +161,7 @@ def create_aqi_forecast_graph(df):
             x=df["time"],
             y=df["us_aqi"],
             mode="lines",
-            name="US AQI",
+            name="AQI",
             line=dict(color="#e76f51", width=3),
             fill="tozeroy",
             fillcolor="rgba(231,111,81,0.12)",
@@ -190,7 +190,7 @@ def create_aqi_forecast_graph(df):
             y=1.12
         ),
         yaxis=dict(
-            title="US AQI"
+            title="AQI"
         ),
         yaxis2=dict(
             title="PM2.5 (µg/m³)",
