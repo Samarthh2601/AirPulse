@@ -22,9 +22,7 @@ def create_forecast_graph(df):
         ]
     )
 
-    # -------------------------
-    # 1. AIR QUALITY
-    # -------------------------
+    # AIR QUALITY
 
     fig.add_trace(
         go.Scatter(
@@ -48,9 +46,8 @@ def create_forecast_graph(df):
         row=1, col=1
     )
 
-    # -------------------------
-    # 2. TEMPERATURE
-    # -------------------------
+
+    # TEMPERATURE
 
     fig.add_trace(
         go.Scatter(
@@ -74,9 +71,7 @@ def create_forecast_graph(df):
         row=2, col=1
     )
 
-    # -------------------------
-    # 3. WIND
-    # -------------------------
+    # WIND
 
     fig.add_trace(
         go.Scatter(
@@ -89,9 +84,8 @@ def create_forecast_graph(df):
         row=3, col=1
     )
 
-    # -------------------------
-    # 4. PRECIPITATION
-    # -------------------------
+
+    # PRECIPITATION
 
     fig.add_trace(
         go.Scatter(
@@ -107,9 +101,9 @@ def create_forecast_graph(df):
         row=4, col=1
     )
 
-    # -------------------------
+
     # LAYOUT
-    # -------------------------
+
 
     fig.update_layout(
         height=950,

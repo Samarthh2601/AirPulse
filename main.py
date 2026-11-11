@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
-from services import get_current_json, get_preds_df, get_aqi_category, create_forecast_graph, create_aqi_forecast_graph,  generate_insights, get_forecast_summary, get_coords, get_aqi_color, CITIES
+from services import get_current_json, get_preds_df, get_aqi_category_color, create_forecast_graph, create_aqi_forecast_graph,  generate_insights, get_forecast_summary, get_coords, CITIES
 import plotly.io as pio
 
 
@@ -54,10 +54,7 @@ def current(request: Request):
     air_quality_data, weather_data = get_current_json(lat, lng)
     
     current_aqi = int(air_quality_data["us_aqi"])
-    aqi_color = get_aqi_color(current_aqi)
-    
-    aqi_category = get_aqi_category(current_aqi)
-
+    aqi_category, aqi_color = get_aqi_category_color(current_aqi)
 
     return templates.TemplateResponse(
         request=request,
