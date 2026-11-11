@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Current Conditions | AirPulse{% endblock %}
+{% block title %}Current Conditions | EcoSwitch{% endblock %}
 
 {% block content %}
 
@@ -9,7 +9,7 @@
     <!-- Dashboard Header -->
     <div class="dashboard-header">
         <div>
-            <span class="dashboard-label">AIRPULSE / LIVE MONITORING</span>
+            <span class="dashboard-label">EcoSwitch / LIVE MONITORING</span>
             <h2>{{ city }}</h2>
             <p>Current weather and air quality conditions</p>
         </div>
@@ -119,11 +119,11 @@
                 <!-- AQI Placeholder -->
                 <div class="aqi-circle-container">
                     <div class="aqi-circle">
-                        <span>--</span>
+                        <span>{{ current_aqi }}</span>
                         <small>AQI</small>
                     </div>
 
-                    <p>Overall AQI unavailable</p>
+                    <p>{{ aqi_category }}</p>
                 </div>
 
                 <!-- Pollutant Values -->

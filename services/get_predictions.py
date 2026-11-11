@@ -68,7 +68,7 @@ def get_current_aqi(latitude, longitude):
     params = {
         "latitude": latitude,
         "longitude": longitude,
-        "current": "pm2_5,pm10",
+        "current": "pm2_5,pm10,us_aqi",
         "timezone": "Asia/Kolkata"
     }
 
@@ -123,4 +123,21 @@ def get_current_json(latitude, longitude):
     return get_current_aqi(latitude, longitude), get_current_weather(latitude, longitude),
 
 
-print(get_current_json(22.5675, 88.3700))
+def get_aqi_category(aqi):
+    if aqi <= 50:
+        return "Good"
+
+    elif aqi <= 100:
+        return "Moderate"
+
+    elif aqi <= 150:
+        return "Unhealthy for Sensitive Groups"
+
+    elif aqi <= 200:
+        return "Unhealthy"
+
+    elif aqi <= 300:
+        return "Very Unhealthy"
+
+    else:
+        return "Hazardous"
