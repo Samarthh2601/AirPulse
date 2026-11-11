@@ -1,6 +1,6 @@
 import json
 
-def get_data() -> list:
+def get_data() -> list[dict]:
     with open("services/in.json", "r") as f:
         data = json.load(f)
 

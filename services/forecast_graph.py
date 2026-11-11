@@ -146,3 +146,37 @@ def create_forecast_graph(df):
     )
 
     return fig
+
+
+import plotly.graph_objects as go
+
+
+def create_aqi_forecast_graph(df):
+
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Scatter(
+            x=df["time"],
+            y=df["us_aqi"],
+            mode="lines",
+            name="US AQI",
+            line=dict(
+                color="#20c997",
+                width=3
+            ),
+            fill="tozeroy",
+            fillcolor="rgba(32,201,151,0.10)"
+        )
+    )
+
+    fig.update_layout(
+        title="72-Hour AQI Forecast",
+        template="plotly_white",
+        height=450,
+        hovermode="x unified",
+        yaxis_title="US AQI",
+        xaxis_title="Time"
+    )
+
+    return fig

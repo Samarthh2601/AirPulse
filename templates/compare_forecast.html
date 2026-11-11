@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <div class="mb-4">
+        <h2 class="fw-bold">Current vs Forecast</h2>
+        <p class="text-muted">
+            Air quality and weather comparison for {{ city }}
+        </p>
+    </div>
+
+    <!-- AQI comparison -->
+    <div class="row g-4 mb-5">
+
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm p-4">
+                <h5>Current AQI</h5>
+
+                <h1 class="display-3 fw-bold">
+                    {{ current_air.us_aqi }}
+                </h1>
+
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm p-4">
+                <h5>Forecast AQI</h5>
+
+                <h1 class="display-3 fw-bold">
+                    {{ forecast_aqi }}
+                </h1>
+
+                <span>Next 24 hours</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Graph -->
+    <div class="card border-0 shadow-sm p-4 mb-5">
+        <h5 class="fw-bold mb-3">AQI Forecast Trend</h5>
+
+        {{ graph_html | safe }}
+    </div>
+
+    <!-- Weather comparison -->
+    <div class="card border-0 shadow-sm p-4">
+        <h5 class="fw-bold mb-3">Current Weather Conditions</h5>
+
+        <div class="row g-3">
+
+            <div class="col-md-3">
+                <p class="text-muted">Temperature</p>
+                <h4>{{ current_weather.temperature_2m }}°C</h4>
+            </div>
+
+            <div class="col-md-3">
+                <p class="text-muted">Humidity</p>
+                <h4>{{ current_weather.relative_humidity_2m }}%</h4>
+            </div>
+
+            <div class="col-md-3">
+                <p class="text-muted">Wind Speed</p>
+                <h4>{{ current_weather.wind_speed_10m }} km/h</h4>
+            </div>
+
+            <div class="col-md-3">
+                <p class="text-muted">Pressure</p>
+                <h4>{{ current_weather.pressure_msl }} hPa</h4>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

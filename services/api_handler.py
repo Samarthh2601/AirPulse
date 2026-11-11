@@ -20,7 +20,6 @@ def fetch_air_quality(latitude, longitude):
             "ozone",
             "ammonia",
             "us_aqi",
-            "european_aqi"
         ],
 
         "forecast_days": 3,
@@ -161,3 +160,10 @@ def get_aqi_color(aqi):
 
     else:
         return "#7E0023"
+
+
+s = get_preds_df(28.6600, 77.2300)
+print(s.columns)
+
+x = get_current_json(28.6600, 77.2300)
+print(x)
