@@ -1,13 +1,13 @@
-import requests
 import pandas as pd
-from datetime import datetime
+import aiohttp
+import asyncio
 from .cache import set_cache, get_cache
 
 AIR_QUALITY_URL = "https://air-quality-api.open-meteo.com/v1/air-quality"
 WEATHER_URL = "https://api.open-meteo.com/v1/forecast"
 
 
-def fetch_air_quality(latitude, longitude):
+async def fetch_air_quality(latitude, longitude):
     params = {
         "latitude": latitude,
         "longitude": longitude,
@@ -28,13 +28,15 @@ def fetch_air_quality(latitude, longitude):
         "timezone": "Asia/Kolkata"
     }
 
-    response = requests.get(AIR_QUALITY_URL, params=params)
-    response.raise_for_status()
+    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=15)) as session:
+        async with session.get(AIR_QUALITY_URL, params=params) as response:
+            response.raise_for_status()
+            data = await response.json()
 
-    return pd.DataFrame(response.json()["hourly"])
+    return pd.DataFrame(data["hourly"])
 
 
-def fetch_weather(latitude, longitude):
+async def fetch_weather(latitude, longitude):
 
 
     params = {
@@ -57,20 +59,18 @@ def fetch_weather(latitude, longitude):
 
         "forecast_days": 3,
         "timezone": "Asia/Kolkata"
-    }
+    }   
 
-    response = requests.get(WEATHER_URL, params=params)
-    response.raise_for_status()
-
-    return pd.DataFrame(response.json()["hourly"])
-
-
-import requests
-
-from services.cache import get_cache, set_cache
+    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=15)) as session:
+        async with session.get(WEATHER_URL, params=params) as response:
+            response.raise_for_status()
+            data = await response.json()
 
 
-def get_current_aqi(latitude, longitude):
+    return pd.DataFrame(data["hourly"])
+
+
+async def get_current_aqi(latitude, longitude):
 
     cache_key = f"air_quality_{latitude:.4f}_{longitude:.4f}"
 
@@ -86,15 +86,12 @@ def get_current_aqi(latitude, longitude):
         "timezone": "Asia/Kolkata"
     }
 
-    response = requests.get(
-        AIR_QUALITY_URL,
-        params=params,
-        timeout=15
-    )
 
-    response.raise_for_status()
 
-    data = response.json()
+    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=15)) as session:
+        async with session.get(AIR_QUALITY_URL, params=params) as response:
+            response.raise_for_status()
+            data = await response.json()
 
     if "current" not in data:
         print("API Response:", data)
@@ -107,7 +104,7 @@ def get_current_aqi(latitude, longitude):
     return current_data
 
 
-def get_current_weather(latitude, longitude):
+async def get_current_weather(latitude, longitude):
 
     cache_key = f"weather_{latitude:.4f}_{longitude:.4f}"
 
@@ -133,15 +130,11 @@ def get_current_weather(latitude, longitude):
         "timezone": "Asia/Kolkata"
     }
 
-    response = requests.get(
-        WEATHER_URL,
-        params=params,
-        timeout=15
-    )
+    async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(total=15)) as session:
+        async with session.get(WEATHER_URL, params=params) as response:
+            response.raise_for_status()
+            data = (await response.json())["current"]
 
-    response.raise_for_status()
-
-    data = response.json()["current"]
 
     set_cache(cache_key, data)
 
@@ -150,15 +143,20 @@ def get_current_weather(latitude, longitude):
 
 
 #returns 3 days worth of predictions
-def get_preds_df(latitude, longitude): 
-    aq_df = fetch_air_quality(latitude, longitude)
-    weather_df = fetch_weather(latitude, longitude)
+async def get_preds_df(latitude, longitude): 
+    aq_df, weather_df = await asyncio.gather(fetch_air_quality(latitude, longitude), fetch_weather(latitude, longitude))
 
     return pd.merge(
-        aq_df,
+        aq_df,                          
         weather_df,
         on="time"
     )
 
-def get_current_json(latitude, longitude):
-    return get_current_aqi(latitude, longitude), get_current_weather(latitude, longitude),
+async def get_current_json(latitude, longitude):
+    current_air, current_weather = await asyncio.gather(
+        get_current_aqi(latitude, longitude),
+        get_current_weather(latitude, longitude)
+    )
+
+    return current_air, current_weather
+

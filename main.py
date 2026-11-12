@@ -33,7 +33,7 @@ def get_template_context(request: Request, context=None):
 
 
 @app.get("/")
-def home(request: Request):
+async def home(request: Request):
     return templates.TemplateResponse(
         request=request,
         name="home.html",
@@ -43,15 +43,15 @@ def home(request: Request):
 
 
 @app.get("/current")
-def current(request: Request):
+async def current(request: Request):
     city = request.cookies.get(
         "selected_city",
-        "Ludhiana"
+        "Delhi"
     )
 
     lat, lng = get_coords(city)
 
-    air_quality_data, weather_data = get_current_json(lat, lng)
+    air_quality_data, weather_data = await get_current_json(lat, lng)
     
     current_aqi = int(air_quality_data["us_aqi"])
     aqi_category, aqi_color = get_aqi_category_color(current_aqi)
@@ -74,12 +74,12 @@ async def forecast(request: Request):
 
     city = request.cookies.get(
             "selected_city",
-            "Ludhiana"
+            "Delhi"
         )
     
     lat, lng = get_coords(city)
 
-    df = get_preds_df(lat, lng)
+    df = await get_preds_df(lat, lng)
 
     # Create graph
     fig = create_forecast_graph(df)
@@ -90,7 +90,6 @@ async def forecast(request: Request):
         include_plotlyjs="cdn"
     )
 
-    # Weather summary cards
     weather_summary = {
         "Humidity": f"{df['relative_humidity_2m'].iloc[0]}%",
         "Pressure": f"{df['pressure_msl'].iloc[0]} hPa",
@@ -117,10 +116,10 @@ async def compare_forecast(request: Request):
     lat, lng = get_coords(city)
 
 
-    current_air, current_weather = get_current_json(lat, lng)
+    current_air, current_weather = await get_current_json(lat, lng)
 
 
-    forecast_df = get_preds_df(lat, lng)
+    forecast_df = await get_preds_df(lat, lng)
 
     forecast_summary, next_24 = get_forecast_summary(
         forecast_df,
@@ -164,9 +163,9 @@ async def action_centre(request: Request):
 
     lat, lng = get_coords(city)
 
-    current_air, current_weather = get_current_json(lat, lng)
+    current_air, current_weather = await get_current_json(lat, lng)
 
-    forecast_df = get_preds_df(lat, lng)
+    forecast_df = await get_preds_df(lat, lng)
 
     actions = get_pollution_actions(
         current_air,
