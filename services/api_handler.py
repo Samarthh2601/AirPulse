@@ -111,7 +111,7 @@ def get_current_weather(latitude, longitude):
 
     cache_key = f"weather_{latitude:.4f}_{longitude:.4f}"
 
-    cached_data = get_cache(cache_key, expiry=600)
+    cached_data = get_cache(cache_key, expiry=1200)
 
     if cached_data is not None:
         return cached_data
