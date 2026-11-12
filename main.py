@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
-from services import get_current_json, get_preds_df, get_aqi_category_color, create_forecast_graph, create_aqi_forecast_graph,  generate_insights, get_forecast_summary, get_pollution_actions, get_outdoor_recommendations, get_coords, CITIES
+from services import get_current_json, get_preds_df, get_aqi_category_color, create_forecast_graph, create_aqi_forecast_graph,  generate_insights, get_forecast_summary, get_pollution_actions, get_outdoor_recommendations, analyse_survey, get_coords, CITIES
 import plotly.io as pio
 
 
@@ -206,6 +206,19 @@ async def outdoor_planner(request: Request):
         context=get_template_context(request, {
             "city": city,
             "recommendations": recommendations
+        })
+    )
+
+@app.get("/survey")
+async def research(request: Request):
+
+    survey = analyse_survey()
+
+    return templates.TemplateResponse(
+        request=request,
+        name="survey.html",
+        context=get_template_context(request, {
+            "survey": survey
         })
     )
 

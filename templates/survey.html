@@ -1,0 +1,269 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-5 research-page">
+
+    <!-- Header -->
+    <div class="research-header mb-5">
+        <span class="research-label">AIRPULSE / RESEARCH</span>
+
+        <h1 class="fw-bold mt-2">
+            Research & Insights
+        </h1>
+
+        <p class="text-secondary">
+            Exploring public experiences, awareness and priorities
+            surrounding air pollution.
+        </p>
+    </div>
+
+    {% if survey.error %}
+
+        <div class="alert alert-warning">
+            {{ survey.error }}
+        </div>
+
+    {% else %}
+
+        <!-- Overview -->
+        <div class="d-flex justify-content-between align-items-center
+                    flex-wrap gap-3 mb-3">
+
+            <div>
+                <h4 class="fw-bold mb-1">Survey Overview</h4>
+                <p class="text-secondary mb-0">
+                    A snapshot of the collected responses.
+                </p>
+            </div>
+
+            <span class="badge rounded-pill text-bg-success px-3 py-2">
+                Survey data loaded
+            </span>
+
+        </div>
+
+        <div class="row g-3 mb-5">
+
+            <div class="col-6 col-lg-3">
+                <div class="research-stat-card">
+                    <div class="stat-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                    <p>Total Respondents</p>
+                    <h2>{{ survey.total_responses }}</h2>
+                    <small>Survey submissions</small>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <div class="research-stat-card">
+                    <div class="stat-icon">
+                        <i class="bi bi-ui-checks"></i>
+                    </div>
+                    <p>Questions Analysed</p>
+                    <h2>{{ survey.charts|length }}</h2>
+                    <small>Survey questions</small>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <div class="research-stat-card">
+                    <div class="stat-icon">
+                        <i class="bi bi-calendar3"></i>
+                    </div>
+                    <p>Survey Period</p>
+                    <h5>{{ survey.survey_period }}</h5>
+                    <small>Based on submission timestamps</small>
+                </div>
+            </div>
+
+            <div class="col-6 col-lg-3">
+                <div class="research-stat-card">
+                    <div class="stat-icon">
+                        <i class="bi bi-check2-circle"></i>
+                    </div>
+                    <p>Answer Completion</p>
+                    <h2>{{ survey.completion_rate }}%</h2>
+                    <small>{{ survey.total_answers }} answers recorded</small>
+                </div>
+            </div>
+
+        </div>
+
+        <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+        <!-- Survey analysis -->
+        <div class="section-heading mb-4">
+            <span class="research-label">RESPONSE BREAKDOWN</span>
+            <h3 class="fw-bold mt-2">Survey Analysis</h3>
+            <p class="text-secondary">
+                Explore how respondents answered each question.
+            </p>
+        </div>
+
+        <div class="row g-4">
+
+            {% for chart in survey.charts %}
+
+                <div class="col-12 col-xl-6">
+
+                    <div class="research-chart-card h-100">
+
+                        <div class="chart-card-heading">
+                            <div>
+                                <span class="chart-number">
+                                    QUESTION {{ loop.index }}
+                                </span>
+
+                                <h5 class="fw-bold mt-2">
+                                    {{ chart.title }}
+                                </h5>
+
+                                <p class="text-secondary small mb-0">
+                                    {{ chart.description }}
+                                </p>
+                            </div>
+
+                            <span class="response-count">
+                                {{ chart.response_count }} responses
+                            </span>
+                        </div>
+
+                        <div class="chart-container">
+                            {{ chart.graph_html | safe }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- Key findings -->
+        <div class="section-heading mt-5 mb-4">
+            <span class="research-label">WHAT THE DATA SHOWS</span>
+            <h3 class="fw-bold mt-2">Key Findings</h3>
+            <p class="text-secondary">
+                The most frequently selected response for each question.
+            </p>
+        </div>
+
+        <div class="row g-3">
+
+            {% for insight in survey.insights %}
+
+                <div class="col-12 col-md-6">
+
+                    <div class="research-insight-card h-100">
+
+                        <div class="d-flex justify-content-between
+                                    align-items-start gap-3">
+
+                            <span class="insight-index">
+                                0{{ loop.index }}
+                            </span>
+
+                            <span class="insight-percentage">
+                                {{ insight.percentage }}%
+                            </span>
+
+                        </div>
+
+                        <h6 class="text-secondary mt-3">
+                            {{ insight.title }}
+                        </h6>
+
+                        <h5 class="fw-bold">
+                            {{ insight.answer }}
+                        </h5>
+
+                        <p class="text-secondary small mb-0">
+                            Selected by {{ insight.count }}
+                            respondents.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+
+        <!-- Feature preference ranking -->
+        {% if survey.question_stats|length > 3 %}
+
+            <div class="section-heading mt-5 mb-4">
+                <span class="research-label">PRODUCT DIRECTION</span>
+                <h3 class="fw-bold mt-2">
+                    What Do People Want From AirPulse?
+                </h3>
+                <p class="text-secondary">
+                    A closer look at the features respondents prioritised.
+                </p>
+            </div>
+
+            {% set feature = survey.question_stats[3] %}
+
+            <div class="research-feature-card">
+
+                <div class="d-flex align-items-center gap-3 mb-3">
+                    <div class="feature-icon">
+                        <i class="bi bi-lightbulb"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-1">
+                            Feature Preferences
+                        </h5>
+                        <p class="text-secondary small mb-0">
+                            Based on {{ feature.total }} answers
+                        </p>
+                    </div>
+                </div>
+
+                <p class="text-secondary mb-0">
+                    The graph above shows the relative demand for
+                    real-time AQI monitoring, forecasts, outdoor
+                    recommendations, health advisories and
+                    community reporting.
+                </p>
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- Methodology -->
+        <div class="research-methodology mt-5">
+
+            <span class="research-label">METHODOLOGY</span>
+
+            <h4 class="fw-bold mt-2">
+                About This Research
+            </h4>
+
+            <p class="text-secondary mb-2">
+                This survey explores respondents' experiences with
+                air pollution, awareness of air quality information
+                and preferences for features in an air-quality
+                monitoring platform.
+            </p>
+
+            <p class="text-secondary mb-0">
+                Percentages are calculated using the number of valid
+                answers to each individual question. The findings
+                describe the survey participants and should not
+                automatically be generalised to the wider population.
+            </p>
+
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
