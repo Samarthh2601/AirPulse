@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-5">
+
+    <!-- HEADER -->
+    <div class="mb-5">
+        <h2 class="fw-bold">Pollution Action Centre</h2>
+        <p class="text-muted">
+            Understand current pollution levels and discover
+            actions that can help create cleaner communities.
+        </p>
+
+        <span class="badge bg-light text-dark border">
+            <i class="bi bi-geo-alt"></i> {{ city }}
+        </span>
+    </div>
+
+
+    <!-- CURRENT STATUS -->
+    <div class="card border-0 shadow-sm p-4 mb-5">
+
+        <div class="row align-items-center">
+
+            <div class="col-md-8">
+
+                <p class="text-muted mb-2">
+                    CURRENT AIR QUALITY
+                </p>
+
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+
+                    <h1 class="display-2 fw-bold mb-0"
+                        style="color: {{ actions.color }};">
+                        {{ actions.aqi }}
+                    </h1>
+
+                    <div>
+                        <span class="badge px-3 py-2"
+                              style="background: {{ actions.color }};
+                                     color: #111;">
+                            {{ actions.category }}
+                        </span>
+
+                        <p class="text-muted mt-2 mb-0">
+                            {{ actions.level }}
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4 mt-4 mt-md-0">
+
+                <div class="row g-3">
+
+                    <div class="col-6">
+                        <p class="text-muted small mb-1">PM2.5</p>
+                        <h4 class="fw-bold">
+                            {{ current_air.pm2_5 }}
+                        </h4>
+                        <small class="text-muted">µg/m³</small>
+                    </div>
+
+                    <div class="col-6">
+                        <p class="text-muted small mb-1">PM10</p>
+                        <h4 class="fw-bold">
+                            {{ current_air.pm10 }}
+                        </h4>
+                        <small class="text-muted">µg/m³</small>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- FORECAST ALERTS -->
+    {% if actions.alerts %}
+
+    <h4 class="fw-bold mb-3">Upcoming Pollution Alerts</h4>
+
+    <div class="row g-3 mb-5">
+
+        {% for alert in actions.alerts %}
+
+        <div class="col-md-6">
+
+            <div class="card border-0 shadow-sm p-4 h-100">
+
+                <h6 class="fw-bold">
+                    {% if alert.type == "warning" %}
+                        <i class="bi bi-exclamation-triangle-fill text-warning me-2"></i>
+                    {% elif alert.type == "success" %}
+                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                    {% else %}
+                        <i class="bi bi-info-circle-fill text-primary me-2"></i>
+                    {% endif %}
+
+                    {{ alert.title }}
+                </h6>
+
+                <p class="text-muted mb-0">
+                    {{ alert.description }}
+                </p>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% endif %}
+
+
+    <!-- INDIVIDUAL ACTIONS -->
+    <div class="mb-5">
+
+        <div class="mb-3">
+            <h4 class="fw-bold">
+                <i class="bi bi-person-standing text-success me-2"></i>
+                What You Can Do
+            </h4>
+
+            <p class="text-muted">
+                Practical precautions for individuals.
+            </p>
+        </div>
+
+        <div class="card border-0 shadow-sm p-4">
+
+            {% for action in actions.individual %}
+
+            <div class="d-flex align-items-start gap-3 mb-3">
+
+                <i class="bi bi-check-circle-fill text-success mt-1"></i>
+
+                <p class="mb-0">{{ action }}</p>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+
+    <!-- COMMUNITY ACTIONS -->
+    <div class="mb-5">
+
+        <div class="mb-3">
+            <h4 class="fw-bold">
+                <i class="bi bi-people text-primary me-2"></i>
+                Community Initiatives
+            </h4>
+
+            <p class="text-muted">
+                Small collective changes that can help reduce pollution.
+            </p>
+        </div>
+
+        <div class="card border-0 shadow-sm p-4">
+
+            {% for action in actions.community %}
+
+            <div class="d-flex align-items-start gap-3 mb-3">
+
+                <i class="bi bi-arrow-right-circle text-primary mt-1"></i>
+
+                <p class="mb-0">{{ action }}</p>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+
+    <!-- AUTHORITY ACTIONS -->
+    <div class="mb-5">
+
+        <div class="mb-3">
+            <h4 class="fw-bold">
+                <i class="bi bi-building text-warning me-2"></i>
+                Recommendations for Local Authorities
+            </h4>
+
+            <p class="text-muted">
+                Potential measures for pollution-control planning.
+            </p>
+        </div>
+
+        <div class="card border-0 shadow-sm p-4">
+
+            {% for action in actions.authority %}
+
+            <div class="d-flex align-items-start gap-3 mb-3">
+
+                <i class="bi bi-clipboard-check text-warning mt-1"></i>
+
+                <p class="mb-0">{{ action }}</p>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+
+    <!-- FOOTNOTE -->
+    <div class="border-top pt-3">
+
+        <p class="text-muted small mb-1">
+            Recommendations are generated using Open-Meteo
+            air-quality data and the US EPA AQI scale.
+        </p>
+
+        <p class="text-muted small mb-0">
+            These are general recommendations, not official
+            government pollution-control directives or medical advice.
+            Consult local authorities for official advisories.
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}

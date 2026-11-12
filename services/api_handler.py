@@ -105,8 +105,11 @@ def get_current_weather(latitude, longitude):
 
     response = requests.get(WEATHER_URL, params=params, timeout=15)
     response.raise_for_status()
+    data = response.json()["current"]
 
-    return response.json()["current"]
+    data["time"] = datetime.fromisoformat(data["time"]).strftime("%d %b %Y, %I:%M %p")
+
+    return data
 
 
 

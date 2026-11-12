@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request, Form
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
-from services import get_current_json, get_preds_df, get_aqi_category_color, create_forecast_graph, create_aqi_forecast_graph,  generate_insights, get_forecast_summary, get_coords, CITIES
+from services import get_current_json, get_preds_df, get_aqi_category_color, create_forecast_graph, create_aqi_forecast_graph,  generate_insights, get_forecast_summary, get_coords, get_pollution_actions, CITIES
 import plotly.io as pio
 
 
@@ -156,6 +156,37 @@ async def compare_forecast(request: Request):
         )
     )
 
+
+@app.get("/action-centre")
+async def action_centre(request: Request):
+
+    city = request.cookies.get("selected_city", CITIES[0])
+
+    lat, lng = get_coords(city)
+
+    current_air, current_weather = get_current_json(lat, lng)
+
+    forecast_df = get_preds_df(lat, lng)
+
+    actions = get_pollution_actions(
+        current_air,
+        forecast_df
+    )
+
+    return templates.TemplateResponse(
+        request=request,
+        name="action_centre.html",
+        context=get_template_context(
+            request,
+            {
+                "city": city,
+                "current_air": current_air,
+                "current_weather": current_weather,
+                "actions": actions
+            }
+        )
+    )
+
 @app.post("/set-city")
 async def set_city(
     request: Request,
@@ -179,3 +210,4 @@ async def set_city(
     )
 
     return response
+
