@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 from datetime import datetime
+from .cache import set_cache, get_cache
 
 AIR_QUALITY_URL = "https://air-quality-api.open-meteo.com/v1/air-quality"
 WEATHER_URL = "https://api.open-meteo.com/v1/forecast"
@@ -64,7 +65,19 @@ def fetch_weather(latitude, longitude):
     return pd.DataFrame(response.json()["hourly"])
 
 
+import requests
+
+from services.cache import get_cache, set_cache
+
+
 def get_current_aqi(latitude, longitude):
+
+    cache_key = f"air_quality_{latitude:.4f}_{longitude:.4f}"
+
+    cached_data = get_cache(cache_key, expiry=600)
+
+    if cached_data is not None:
+        return cached_data
 
     params = {
         "latitude": latitude,
@@ -73,7 +86,12 @@ def get_current_aqi(latitude, longitude):
         "timezone": "Asia/Kolkata"
     }
 
-    response = requests.get(AIR_QUALITY_URL, params=params, timeout=15)
+    response = requests.get(
+        AIR_QUALITY_URL,
+        params=params,
+        timeout=15
+    )
+
     response.raise_for_status()
 
     data = response.json()
@@ -82,9 +100,21 @@ def get_current_aqi(latitude, longitude):
         print("API Response:", data)
         return None
 
-    return data["current"]
+    current_data = data["current"]
+
+    set_cache(cache_key, current_data)
+
+    return current_data
+
 
 def get_current_weather(latitude, longitude):
+
+    cache_key = f"weather_{latitude:.4f}_{longitude:.4f}"
+
+    cached_data = get_cache(cache_key, expiry=600)
+
+    if cached_data is not None:
+        return cached_data
 
     params = {
         "latitude": latitude,
@@ -103,11 +133,17 @@ def get_current_weather(latitude, longitude):
         "timezone": "Asia/Kolkata"
     }
 
-    response = requests.get(WEATHER_URL, params=params, timeout=15)
+    response = requests.get(
+        WEATHER_URL,
+        params=params,
+        timeout=15
+    )
+
     response.raise_for_status()
+
     data = response.json()["current"]
 
-    data["time"] = datetime.fromisoformat(data["time"]).strftime("%d %b %Y, %I:%M %p")
+    set_cache(cache_key, data)
 
     return data
 

@@ -18,7 +18,7 @@ def get_pollution_actions(current_air: dict, forecast_df: pd.DataFrame):
             "alerts": []
         }
 
-    # US EPA AQI categories
+
     if aqi <= 50:
         category = "Good"
         color = "#00E400"
