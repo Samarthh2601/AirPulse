@@ -1,0 +1,233 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container py-4">
+
+    <!-- Page heading -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <div>
+            <h2>
+                <i class="bi bi-tree me-2"></i>
+                Best Time Outdoors
+            </h2>
+            <p class="text-muted mb-0">
+                Find suitable upcoming hours for outdoor activities in {{ city }}.
+            </p>
+        </div>
+
+        <span class="badge bg-primary-subtle text-primary p-2">
+            <i class="bi bi-clock me-1"></i>
+            Next 48 Hours
+        </span>
+    </div>
+
+
+    {% if recommendations.best_window %}
+
+    <!-- Best window -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+
+            <span class="badge bg-success mb-3">
+                <i class="bi bi-star-fill me-1"></i>
+                Best Available Window
+            </span>
+
+            <h3 class="mb-1">
+                {{ recommendations.best_window.start }}
+                – {{ recommendations.best_window.end }}
+            </h3>
+
+            <p class="text-muted">
+                Recommended upcoming outdoor time
+            </p>
+
+            <div class="row g-3 mt-2">
+
+                <div class="col-md-4">
+                    <div class="p-3 rounded bg-light">
+                        <small class="text-muted">Average AQI</small>
+                        <h2 class="mb-0">
+                            {{ recommendations.best_window.avg_aqi }}
+                        </h2>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="p-3 rounded bg-light">
+                        <small class="text-muted">Suitability Score</small>
+                        <h2 class="mb-0 text-success">
+                            {{ recommendations.best_window.avg_score }}/100
+                        </h2>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="p-3 rounded bg-light">
+                        <small class="text-muted">Conditions</small>
+                        <h5 class="mt-2 mb-0">Forecast-based</h5>
+                    </div>
+                </div>
+
+            </div>
+
+            <hr>
+
+            <h6>Why this window?</h6>
+
+            {% for reason in recommendations.best_window.reasons %}
+                <span class="badge bg-success-subtle text-success me-1 mb-2 p-2">
+                    <i class="bi bi-check-circle me-1"></i>
+                    {{ reason }}
+                </span>
+            {% endfor %}
+
+            {% if not recommendations.best_window.reasons %}
+                <p class="text-muted mb-0">
+                    This window has the highest overall suitability score
+                    among the qualifying periods.
+                </p>
+            {% endif %}
+
+        </div>
+    </div>
+
+
+    <!-- Alternative windows -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+
+            <h5 class="mb-3">
+                <i class="bi bi-calendar-check me-2"></i>
+                Alternative Time Windows
+            </h5>
+
+            {% if recommendations.alternatives %}
+
+                {% for window in recommendations.alternatives %}
+
+                <div class="d-flex justify-content-between align-items-center
+                            py-3 border-bottom flex-wrap gap-2">
+
+                    <div>
+                        <strong>{{ window.start }} – {{ window.end }}</strong>
+                        <div class="text-muted small">
+                            Average AQI: {{ window.avg_aqi }}
+                        </div>
+                    </div>
+
+                    <span class="badge bg-primary-subtle text-primary p-2">
+                        Score: {{ window.avg_score }}/100
+                    </span>
+
+                </div>
+
+                {% endfor %}
+
+            {% else %}
+                <p class="text-muted mb-0">
+                    No other suitable windows found.
+                </p>
+            {% endif %}
+
+        </div>
+    </div>
+
+
+    {% else %}
+
+    <div class="alert alert-warning">
+        <i class="bi bi-exclamation-circle me-2"></i>
+        {{ recommendations.message }}
+    </div>
+
+    {% endif %}
+
+
+    <!-- Hourly forecast table -->
+    {% if recommendations.hourly_data %}
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-4">
+
+            <h5 class="mb-3">
+                <i class="bi bi-clock-history me-2"></i>
+                Hourly Outdoor Conditions
+            </h5>
+
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>AQI</th>
+                            <th>Temperature</th>
+                            <th>Precipitation</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for hour in recommendations.hourly_data %}
+
+                        <tr>
+                            <td>{{ hour.time }}</td>
+                            <td>{{ hour.aqi }}</td>
+
+                            <td>
+                                {% if hour.temperature is not none %}
+                                    {{ hour.temperature }} °C
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if hour.precipitation is not none %}
+                                    {{ hour.precipitation }} mm
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <span class="badge
+                                    {% if hour.score >= 75 %}
+                                        bg-success
+                                    {% elif hour.score >= 55 %}
+                                        bg-warning text-dark
+                                    {% else %}
+                                        bg-danger
+                                    {% endif %}">
+                                    {{ hour.score }}
+                                </span>
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+
+    {% endif %}
+
+
+    <div class="alert alert-info">
+        <strong>Important:</strong> These recommendations are based on
+        forecast AQI and weather conditions. They are general planning
+        guidance, not medical advice or a guarantee of safe outdoor air.
+        People sensitive to air pollution should follow relevant health
+        guidance and check conditions before going outside.
+    </div>
+
+</div>
+
+{% endblock %}

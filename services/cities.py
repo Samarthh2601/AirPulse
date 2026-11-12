@@ -1,7 +1,7 @@
 import json
 
 def get_data() -> list[dict]:
-    with open("services/in.json", "r") as f:
+    with open("in.json", "r") as f:
         data = json.load(f)
 
     return data
